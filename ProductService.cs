@@ -110,6 +110,37 @@ public class ProductService
             Console.WriteLine($"ID: {product.Id}, Nazwa: {product.Name}, Cena: {product.Price} zł, Kategoria: {product.Category?.Name ?? "brak"}");
         }
     }
+    
+    public void DeleteAllProducts()
+    {
+        using var context = new Shop();
+        context.products.RemoveRange(context.products);
+        context.SaveChanges();
+        Console.WriteLine("Wszystkie produkty zostały usunięte.");
+    }
+    
+    public void AddProduct(string name, decimal price, string categoryName)
+    {
+        using var context = new Shop();
+        
+        var category = context.categories.FirstOrDefault(c => c.Name.ToLower() == categoryName.ToLower());
+        if (category == null)
+        {
+            Console.WriteLine($"Kategoria {categoryName} nie istnieje.");
+            return;
+        }
+
+        var product = new Product
+        {
+            Name = name,
+            Price = price,
+            CategoryId = category.Id
+        };
+
+        context.products.Add(product);
+        context.SaveChanges();
+        Console.WriteLine("Produkt dodany pomyślnie.");
+    }
 
     public void ShowProductsByCategory(string categoryName)
     {
